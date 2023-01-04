@@ -13,7 +13,24 @@ function scrollIntoVeiw(ele, callback) {
   const doucmentHeight = Math.max(document.body.scrollHeight, document.body.offsetHeight,
     document.body.clientHeight, document.body.scrollHeight, document.body.offsetHeight);
 
+
+
+  let scrollPos = window.scrollY;
+
+  window.scrollTo({
+    top: offset,
+    behavior: 'smooth'
+  })        
+
+  let eix = setTimeout(() => {
+    if (window.scrollY === scrollPos) {
+      alert('sdf')
+      clearInterval(eix)
+    }
+  }, 1);
+
   const onScroll = function () {
+    clearInterval(eix)
     if (Math.floor(window.pageYOffset) === floorOffset) {
       window.removeEventListener('scroll', onScroll)
       callback()
@@ -26,25 +43,9 @@ function scrollIntoVeiw(ele, callback) {
       callback()
       window.removeEventListener('scroll', onScroll)
     }
-    console.log(`${window.pageYOffset} - ${doucmentHeight-window.innerHeight}`);
+    console.log(`${window.pageYOffset} - ${doucmentHeight - window.innerHeight}`);
 
   }
   window.addEventListener('scroll', onScroll);
-
-  let scrollPos = window.scrollY;
-
-  // window.scrollTo({
-  //   top: offset,
-  //   behavior: 'smooth'
-  // })
-  $(window).animate({scrolltop: offset}, 900, ()=>{
-    alert('done')
-  })
-
-  // setTimeout(() => {
-    
-  //   if (window.scrollY === scrollPos)
-  //   alert('sdf')
-  // }, 100);
 }
 scrollIntoVeiw(document.querySelector('button'), () => { alert('done') })
