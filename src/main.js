@@ -7,45 +7,30 @@ function scrollIntoVeiw(ele, callback) {
   function getOffsetTop(element) {
     return element ? (element.offsetTop + getOffsetTop(element.offsetParent)) : 0;
   }
-  const offset = getOffsetTop(ele) - (window.innerHeight / 2) + (ele.clientHeight / 2);
-
-  const floorOffset = Math.floor(offset);
-  const doucmentHeight = Math.max(document.body.scrollHeight, document.body.offsetHeight,
-    document.body.clientHeight, document.body.scrollHeight, document.body.offsetHeight);
-
-
-
-  let scrollPos = window.scrollY;
-
-  window.scrollTo({
-    top: offset,
-    behavior: 'smooth'
-  })        
-
-  let eix = setTimeout(() => {
-    if (window.scrollY === scrollPos) {
-      alert('sdf')
-      clearInterval(eix)
-    }
-  }, 1);
+  const targetOffset = getOffsetTop(ele) - (window.innerHeight / 2) + (ele.clientHeight / 2);
+  let targetOffsetFloor = Math.floor(targetOffset);
+  const doucmentHeight = document.documentElement.scrollHeight;
+  const maxOffset = doucmentHeight - window.innerHeight;
+  
+  if (targetOffsetFloor < 0) targetOffsetFloor = 0;
+  if (targetOffsetFloor > maxOffset) targetOffsetFloor = maxOffset;
 
   const onScroll = function () {
-    clearInterval(eix)
-    if (Math.floor(window.pageYOffset) === floorOffset) {
+    let windowOffsetFloor = Math.floor(window.pageYOffset);
+    if (windowOffsetFloor === targetOffsetFloor) {
       window.removeEventListener('scroll', onScroll)
       callback()
     }
-    if (window.pageYOffset === 0) {
-      callback()
-      window.removeEventListener('scroll', onScroll)
-    }
-    if (window.innerHeight + window.pageYOffset >= document.body.offsetHeight) {
-      callback()
-      window.removeEventListener('scroll', onScroll)
-    }
-    console.log(`${window.pageYOffset} - ${doucmentHeight - window.innerHeight}`);
-
+    console.log(`pos:${Math.floor(window.pageYOffset)} target:${targetOffsetFloor} diff:${Math.floor(window.pageYOffset)-targetOffsetFloor}`);
   }
   window.addEventListener('scroll', onScroll);
+  window.scrollTo({
+    top: targetOffset,
+    behavior: 'smooth'
+  })
+  onScroll()
 }
-scrollIntoVeiw(document.querySelector('button'), () => { alert('done') })
+
+window.onload = e => {
+  scrollIntoVeiw(document.querySelector('button'), () => { alert('done') })
+}
